@@ -1,0 +1,50 @@
+<main class="login-page">
+  <section class="brand-panel">
+    <div class="brand-mark">CD</div>
+    <p class="eyebrow">Admin Master</p>
+    <h1>Gestão interna do SaaS Caverna Digital.</h1>
+    <p>Controle clientes, assinaturas, uso da plataforma e status das contas com segurança por JWT e roles internas.</p>
+
+    <div class="benefit-grid">
+      <span>Clientes e usuários</span>
+      <span>Planos e assinaturas</span>
+      <span>Métricas globais</span>
+      <span>Auditoria administrativa</span>
+    </div>
+  </section>
+
+  <section class="auth-panel">
+    <mat-card>
+      <mat-card-content>
+        <p class="eyebrow">Caverna Digital</p>
+        <h2>Entrar no Admin Master</h2>
+        <p class="muted">Acesso restrito à equipe interna autorizada.</p>
+
+        <form (ngSubmit)="submit()">
+          <mat-form-field appearance="outline">
+            <mat-label>E-mail interno</mat-label>
+            <input matInput type="email" name="email" [(ngModel)]="email" autocomplete="email" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Senha</mat-label>
+            <input matInput type="password" name="password" [(ngModel)]="password" autocomplete="current-password" />
+          </mat-form-field>
+
+          @if (error()) {
+            <div class="error-message">{{ error() }}</div>
+          }
+
+          <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+            @if (loading()) {
+              <mat-spinner diameter="18" />
+              Validando acesso...
+            } @else {
+              Entrar com JWT
+            }
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </section>
+</main>

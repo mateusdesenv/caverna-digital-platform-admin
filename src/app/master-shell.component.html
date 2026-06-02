@@ -1,0 +1,42 @@
+<main class="admin-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">CD</div>
+      <div>
+        <strong>Caverna Digital</strong>
+        <span>Admin Master</span>
+      </div>
+    </div>
+
+    <nav>
+      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/admin/clientes" routerLinkActive="active">Clientes</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+      <a routerLink="/admin/assinaturas" routerLinkActive="active">Assinaturas</a>
+      <a routerLink="/admin/planos" routerLinkActive="active">Planos</a>
+      <a routerLink="/admin/metricas" routerLinkActive="active">Métricas</a>
+      <a routerLink="/admin/configuracoes" routerLinkActive="active">Configurações</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span>{{ auth.user()?.role || 'sem role' }}</span>
+      <strong>{{ auth.user()?.name }}</strong>
+      <button mat-stroked-button type="button" (click)="logout()">Sair</button>
+    </div>
+  </aside>
+
+  <section class="workspace">
+    <header class="topbar">
+      <label>
+        <span>Buscar</span>
+        <input type="search" placeholder="Clientes, usuários, assinaturas..." />
+      </label>
+      <div class="profile">
+        <span>{{ auth.user()?.email }}</span>
+        <div class="avatar">{{ auth.user()?.name?.charAt(0) || 'A' }}</div>
+      </div>
+    </header>
+
+    <router-outlet />
+  </section>
+</main>

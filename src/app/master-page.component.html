@@ -1,0 +1,247 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Operação interna</p>
+      <h1>{{ pageTitle() }}</h1>
+      <p>{{ pageSubtitle() }}</p>
+    </div>
+
+    <div class="header-actions">
+      @if (page() === 'plans') {
+        <button mat-flat-button color="primary" type="button" [disabled]="!canChangePlans()" (click)="actionToast('Criação de planos preparada para integração administrativa.')">Novo plano</button>
+      }
+      @if (page() === 'clients') {
+        <button mat-stroked-button type="button" (click)="actionToast('Exportação será conectada à API de relatórios.')">Exportar</button>
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="skeleton-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  } @else if (error()) {
+    <mat-card class="empty-card"><mat-card-content>{{ error() }}</mat-card-content></mat-card>
+  } @else {
+    @switch (page()) {
+      @case ('dashboard') {
+        @if (dashboard(); as data) {
+          <section class="metric-grid">
+            <article><span>Total de clientes</span><strong>{{ data.totalClients | number }}</strong></article>
+            <article><span>Usuários ativos</span><strong>{{ data.activeUsers | number }}</strong></article>
+            <article><span>Plano grátis</span><strong>{{ data.freeUsers | number }}</strong></article>
+            <article><span>Pagantes</span><strong>{{ data.paidUsers | number }}</strong></article>
+            <article><span>Álbuns criados</span><strong>{{ data.albumsCreated | number }}</strong></article>
+            <article><span>Imagens enviadas</span><strong>{{ data.imagesUploaded | number }}</strong></article>
+            <article><span>Visualizações</span><strong>{{ data.totalViews | number }}</strong></article>
+            <article><span>Receita mensal</span><strong>{{ data.estimatedMonthlyRevenue | currency: 'BRL' }}</strong></article>
+          </section>
+
+          <section class="panel-grid">
+            <mat-card>
+              <mat-card-content>
+                <h2>Distribuição por plano</h2>
+                @for (item of data.planDistribution; track item.plan) {
+                  <div class="bar-row">
+                    <span>{{ item.plan }}</span>
+                    <mat-progress-bar mode="determinate" [value]="data.totalClients ? (item.count / data.totalClients) * 100 : 0" />
+                    <strong>{{ item.count }}</strong>
+                  </div>
+                } @empty {
+                  <p class="empty-text">Nenhuma distribuição por plano encontrada.</p>
+                }
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card>
+              <mat-card-content>
+                <h2>Últimos cadastros</h2>
+                @for (client of data.recentClients; track client.id) {
+                  <a class="mini-row" [routerLink]="['/admin/clientes', client.id]">
+                    <span>{{ client.name }}</span>
+                    <strong>{{ client.planKey || 'sem plano' }}</strong>
+                  </a>
+                } @empty {
+                  <p class="empty-text">Nenhum cliente cadastrado.</p>
+                }
+              </mat-card-content>
+            </mat-card>
+          </section>
+        }
+      }
+
+      @case ('clients') {
+        <div class="table-card">
+          @if (clients().length) {
+            <table>
+              <thead><tr><th>Cliente</th><th>Plano</th><th>Status</th><th>Álbuns</th><th>Imagens</th><th>Visualizações</th><th>Criado em</th><th>Ações</th></tr></thead>
+              <tbody>
+                @for (client of clients(); track client.id) {
+                  <tr>
+                    <td><a [routerLink]="['/admin/clientes', client.id]"><strong>{{ client.name }}</strong><span>{{ client.email }}</span></a></td>
+                    <td>{{ client.planKey || 'sem plano' }}</td>
+                    <td><span class="badge" [class.blocked]="client.status === 'blocked'">{{ client.status }}</span></td>
+                    <td>{{ client.albumsCount }}</td>
+                    <td>{{ client.imagesCount }}</td>
+                    <td>{{ client.viewsCount }}</td>
+                    <td>{{ client.createdAt | date: 'dd/MM/yyyy' }}</td>
+                    <td class="actions">
+                      <button mat-button [routerLink]="['/admin/clientes', client.id]">Visualizar</button>
+                      <button mat-button type="button" (click)="client.status === 'blocked' ? unblockClient(client) : blockClient(client)">{{ client.status === 'blocked' ? 'Desbloquear' : 'Bloquear' }}</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="empty-state"><h2>Nenhum cliente cadastrado.</h2><p>Quando contas reais forem criadas na API, elas aparecerão aqui.</p></div>
+          }
+        </div>
+      }
+
+      @case ('client-detail') {
+        @if (client(); as item) {
+          <section class="detail-grid">
+            <mat-card class="profile-card">
+              <mat-card-content>
+                <div class="client-avatar">{{ item.name.charAt(0) }}</div>
+                <h2>{{ item.name }}</h2>
+                <p>{{ item.email }}</p>
+                <span class="badge" [class.blocked]="item.status === 'blocked'">{{ item.status }}</span>
+                <dl>
+                  <dt>Firebase UID</dt><dd>{{ item.firebaseUid || 'não cadastrado' }}</dd>
+                  <dt>Plano atual</dt><dd>{{ item.planKey || 'sem plano' }}</dd>
+                  <dt>Último login</dt><dd>{{ item.lastLogin ? (item.lastLogin | date: 'dd/MM/yyyy HH:mm') : 'não registrado' }}</dd>
+                </dl>
+                <div class="stack-actions">
+                  <button mat-stroked-button type="button" [disabled]="!canChangePlans()" (click)="actionToast('Alteração de plano preparada para integração com billing.')">Alterar plano</button>
+                  <button mat-stroked-button type="button" (click)="item.status === 'blocked' ? unblockClient(item) : blockClient(item)">{{ item.status === 'blocked' ? 'Reativar conta' : 'Bloquear conta' }}</button>
+                  <button mat-stroked-button type="button" (click)="actionToast('Solicitação de logout forçado registrada para integração futura.')">Forçar logout</button>
+                  <button mat-flat-button color="warn" type="button" [disabled]="!canDeleteClients()" (click)="deleteClient(item)">Excluir conta</button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <div class="usage-panel">
+              @for (metric of [
+                { label: 'Álbuns', value: item.usage.albums },
+                { label: 'Imagens', value: item.usage.images },
+                { label: 'Armazenamento GB', value: item.usage.storageGb },
+                { label: 'Visualizações mensais', value: item.usage.monthlyViews }
+              ]; track metric.label) {
+                <mat-card>
+                  <mat-card-content>
+                    <span>{{ metric.label }}</span>
+                    <strong>{{ metric.value.used | number }} de {{ formatLimit(metric.value.limit) }}</strong>
+                    <mat-progress-bar mode="determinate" [value]="usagePercent(metric.value.used, metric.value.limit)" />
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+          </section>
+
+          <section class="table-card">
+            <h2>Álbuns do cliente</h2>
+            @if (item.albums.length) {
+              <table>
+                <thead><tr><th>Capa</th><th>Título</th><th>Categoria</th><th>Imagens</th><th>Visualizações</th><th>Status</th></tr></thead>
+                <tbody>
+                  @for (album of item.albums; track album.id) {
+                    <tr><td><img class="thumb" [src]="album.coverUrl" [alt]="album.title" /></td><td>{{ album.title }}</td><td>{{ album.category }}</td><td>{{ album.imagesCount }}</td><td>{{ album.views }}</td><td><span class="badge">{{ album.status }}</span></td></tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="empty-state"><h2>Nenhum álbum cadastrado.</h2><p>Os álbuns reais do cliente serão exibidos aqui.</p></div>
+            }
+          </section>
+        }
+      }
+
+      @case ('users') {
+        <div class="table-card">
+          @if (users().length) {
+            <table>
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Provider</th><th>Role</th><th>Plano</th><th>Status</th><th>Cadastro</th><th>Último login</th></tr></thead>
+              <tbody>
+                @for (user of users(); track user.id) {
+                  <tr><td>{{ user.name }}</td><td>{{ user.email }}</td><td>{{ user.provider }}</td><td>{{ user.role }}</td><td>{{ user.planKey || 'sem plano' }}</td><td><span class="badge">{{ user.status }}</span></td><td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td><td>{{ user.lastLogin ? (user.lastLogin | date: 'dd/MM/yyyy') : 'não registrado' }}</td></tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="empty-state"><h2>Nenhum usuário cadastrado.</h2><p>Usuários reais da plataforma aparecerão após autenticação e persistência na API.</p></div>
+          }
+        </div>
+      }
+
+      @case ('subscriptions') {
+        <div class="table-card">
+          @if (subscriptions().length) {
+            <table>
+              <thead><tr><th>Cliente</th><th>Plano</th><th>Status</th><th>Valor</th><th>Renovação</th><th>Pagamento</th><th>Ações</th></tr></thead>
+              <tbody>
+                @for (subscription of subscriptions(); track subscription.id) {
+                  <tr><td><strong>{{ subscription.clientName }}</strong><span>{{ subscription.clientEmail }}</span></td><td>{{ subscription.planKey }}</td><td><span class="badge">{{ subscription.status }}</span></td><td>{{ subscription.price | currency: 'BRL' }}</td><td>{{ subscription.renewalDate ? (subscription.renewalDate | date: 'dd/MM/yyyy') : 'sem data' }}</td><td>{{ subscription.paymentMethod || 'não cadastrado' }}</td><td><button mat-button type="button" (click)="actionToast('Ações de billing serão conectadas ao gateway.')">Gerenciar</button></td></tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="empty-state"><h2>Nenhuma assinatura encontrada.</h2><p>Assinaturas persistidas no banco serão listadas aqui.</p></div>
+          }
+        </div>
+      }
+
+      @case ('plans') {
+        <section class="plans-grid">
+          @for (plan of plans(); track plan.id) {
+            <mat-card>
+              <mat-card-content>
+                <span class="badge">{{ plan.isActive ? 'ativo' : 'inativo' }}</span>
+                <h2>{{ plan.name }}</h2>
+                <strong>{{ plan.price | currency: 'BRL' }}/mês</strong>
+                <ul>
+                  <li>Álbuns: {{ formatLimit(plan.limits.albumLimit) }}</li>
+                  <li>Imagens: {{ formatLimit(plan.limits.imageLimit) }}</li>
+                  <li>Armazenamento: {{ formatLimit(plan.limits.storageGbLimit) }} GB</li>
+                  <li>Visualizações: {{ formatLimit(plan.limits.monthlyViewsLimit) }}</li>
+                </ul>
+                <button mat-stroked-button type="button" [disabled]="!canChangePlans()" (click)="actionToast('Edição de plano preparada para persistência via API.')">Editar limites</button>
+              </mat-card-content>
+            </mat-card>
+          } @empty {
+            <mat-card class="empty-card"><mat-card-content><h2>Nenhum plano cadastrado.</h2><p>Cadastre planos reais pela API para exibir o catálogo interno.</p></mat-card-content></mat-card>
+          }
+        </section>
+      }
+
+      @case ('metrics') {
+        @if (dashboard(); as data) {
+          <section class="panel-grid">
+            <mat-card><mat-card-content><h2>Uso de armazenamento</h2><strong>{{ data.storageGbUsed | number: '1.1-2' }} GB</strong><p class="empty-text">Valor calculado com base nas imagens persistidas.</p></mat-card-content></mat-card>
+            <mat-card><mat-card-content><h2>Visualizações totais</h2><strong>{{ data.totalViews | number }}</strong><p class="empty-text">Soma dos contadores reais dos álbuns.</p></mat-card-content></mat-card>
+            <mat-card><mat-card-content><h2>Receita mensal estimada</h2><strong>{{ data.estimatedMonthlyRevenue | currency: 'BRL' }}</strong><p class="empty-text">Calculada a partir das assinaturas ativas.</p></mat-card-content></mat-card>
+          </section>
+        }
+      }
+
+      @case ('settings') {
+        <mat-card class="settings-card">
+          <mat-card-content>
+            <h2>Controle de acesso</h2>
+            <p>Este painel exige JWT interno e validação de role no backend.</p>
+            <div class="role-grid">
+              <span>super_admin: acesso total e exclusão de clientes</span>
+              <span>admin: planos, clientes e operação</span>
+              <span>support: clientes e uso</span>
+              <span>finance: assinaturas e planos</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
+  }
+</section>

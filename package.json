@@ -1,0 +1,39 @@
+{
+  "name": "caverna-digital-master-admin",
+  "version": "0.0.0",
+  "description": "Admin Master interno do SaaS Caverna Digital",
+  "scripts": {
+    "ng": "ng",
+    "env:generate": "node scripts/generate-env.mjs",
+    "prestart": "npm run env:generate",
+    "start": "ng serve",
+    "prebuild": "npm run env:generate",
+    "build": "ng build",
+    "prewatch": "npm run env:generate",
+    "watch": "ng build --watch --configuration development",
+    "pretest": "npm run env:generate",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "dependencies": {
+    "@angular/animations": "^21.2.15",
+    "@angular/cdk": "^21.2.13",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/material": "^21.2.13",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@lucide/angular": "^1.17.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.12",
+    "@angular/cli": "^21.2.12",
+    "@angular/compiler-cli": "^21.2.0",
+    "typescript": "~5.9.2"
+  }
+}

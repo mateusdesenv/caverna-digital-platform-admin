@@ -1,0 +1,23 @@
+:host { display: block; min-height: 100vh; background: #f4f1ec; color: #171717; }
+.login-page { min-height: 100vh; display: grid; grid-template-columns: 1.1fr .9fr; }
+.brand-panel { padding: 72px; background: #111111; color: #f8f4ed; display: flex; flex-direction: column; justify-content: center; }
+.brand-mark { width: 58px; height: 58px; border-radius: 16px; background: #f8f4ed; color: #111; display: grid; place-items: center; font-weight: 800; margin-bottom: 42px; }
+.eyebrow { margin: 0 0 14px; color: #9a7d54; text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 800; }
+h1 { max-width: 760px; margin: 0; font-size: clamp(42px, 6vw, 78px); line-height: .96; letter-spacing: 0; }
+.brand-panel > p:not(.eyebrow) { max-width: 560px; margin: 28px 0 0; color: #d9d1c4; font-size: 17px; line-height: 1.7; }
+.benefit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 48px; max-width: 620px; }
+.benefit-grid span { border: 1px solid rgba(248,244,237,.16); border-radius: 14px; padding: 16px; background: rgba(255,255,255,.04); }
+.auth-panel { display: grid; place-items: center; padding: 32px; }
+mat-card { width: min(100%, 460px); border-radius: 20px; box-shadow: 0 24px 70px rgba(17,17,17,.12); }
+mat-card-content { padding: 36px; }
+h2 { margin: 0; font-size: 28px; letter-spacing: 0; }
+.muted { margin: 10px 0 28px; color: #6d6d6d; }
+form { display: grid; gap: 14px; }
+button { height: 48px; border-radius: 12px; }
+button mat-spinner { display: inline-block; margin-right: 8px; }
+.error-message { border: 1px solid #f0b6b6; background: #fff2f2; color: #9d2525; border-radius: 12px; padding: 12px 14px; font-size: 13px; }
+@media (max-width: 900px) {
+  .login-page { grid-template-columns: 1fr; }
+  .brand-panel { padding: 42px 24px; }
+  .auth-panel { padding: 24px; }
+}
