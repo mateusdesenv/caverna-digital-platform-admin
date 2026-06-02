@@ -87,16 +87,49 @@ export interface SubscriptionRecord {
 export interface PlanRecord {
   id: string;
   key: string;
+  slug: string;
   name: string;
+  description: string;
   price: number;
+  monthlyPrice: number;
+  yearlyPrice: number | null;
+  status: 'active' | 'inactive' | 'draft';
   isActive: boolean;
+  isFeatured: boolean;
+  commercialBadges: {
+    recommended: boolean;
+    bestSeller: boolean;
+    isNew: boolean;
+  };
   limits: {
     albumLimit: number | null;
     imageLimit: number | null;
     storageGbLimit: number | null;
     monthlyViewsLimit: number | null;
+    albums: number | null;
+    images: number | null;
+    storageGb: number | null;
+    monthlyViews: number | null;
   };
-  features: string[];
+  features: PlanFeatures;
+  featureList: string[];
+  clientCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlanFeatures {
+  publicPortfolio: boolean;
+  analytics: boolean;
+  customDomain: boolean;
+  removeBranding: boolean;
+  multiUser: boolean;
+  privateGalleries: boolean;
+  integrations: boolean;
+  backups: boolean;
+  prioritySupport: boolean;
+  viewCounter: boolean;
+  albumOrganization: boolean;
 }
 
 export interface UsageMetric {

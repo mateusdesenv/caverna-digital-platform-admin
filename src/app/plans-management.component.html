@@ -1,0 +1,197 @@
+<section class="plans-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Financeiro</p>
+      <h1>Planos</h1>
+      <p>Cadastre e gerencie os planos do SaaS usados nas assinaturas, validações de limite e página pública de preços.</p>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" [disabled]="!canManagePlans()" (click)="openCreateModal()">
+      Novo plano
+    </button>
+  </header>
+
+  @if (loading()) {
+    <div class="skeleton-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  } @else {
+    <mat-card class="table-card">
+      <mat-card-content>
+        @if (plans().length) {
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Preço mensal</th>
+                <th>Status</th>
+                <th>Álbuns</th>
+                <th>Imagens</th>
+                <th>Armazenamento</th>
+                <th>Visualizações</th>
+                <th>Clientes</th>
+                <th>Criado em</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (plan of plans(); track plan.id) {
+                <tr>
+                  <td>
+                    <strong>{{ plan.name }}</strong>
+                    <span>{{ plan.slug }}</span>
+                  </td>
+                  <td>{{ plan.monthlyPrice | currency: 'BRL' }}</td>
+                  <td><span class="status-badge" [class]="plan.status">{{ plan.status }}</span></td>
+                  <td>{{ formatLimit(plan.limits.albums) }}</td>
+                  <td>{{ formatLimit(plan.limits.images) }}</td>
+                  <td>{{ formatLimit(plan.limits.storageGb, ' GB') }}</td>
+                  <td>{{ formatLimit(plan.limits.monthlyViews) }}</td>
+                  <td>{{ plan.clientCount | number }}</td>
+                  <td>{{ plan.createdAt | date: 'dd/MM/yyyy' }}</td>
+                  <td class="actions">
+                    <button mat-button type="button" (click)="openEditModal(plan)">Visualizar</button>
+                    <button mat-button type="button" [disabled]="!canManagePlans()" (click)="openEditModal(plan)">Editar</button>
+                    <button mat-button type="button" [disabled]="!canManagePlans()" (click)="duplicatePlan(plan)">Duplicar</button>
+                    <button mat-button type="button" [disabled]="!canManagePlans()" (click)="toggleStatus(plan)">
+                      {{ plan.status === 'active' ? 'Desativar' : 'Ativar' }}
+                    </button>
+                    <button mat-button type="button" [disabled]="!canDeletePlans()" (click)="deletePlan(plan)">Excluir</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="empty-state">
+            <h2>Nenhum plano cadastrado.</h2>
+            <p>Crie o primeiro plano para habilitar preços públicos e validações de limite.</p>
+            <button mat-flat-button color="primary" type="button" [disabled]="!canManagePlans()" (click)="openCreateModal()">Criar plano</button>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (modalOpen()) {
+    <div class="modal-backdrop" role="presentation" (click)="closeModal()">
+      <section class="plan-modal" role="dialog" aria-modal="true" aria-labelledby="planModalTitle" (click)="$event.stopPropagation()">
+        <header>
+          <div>
+            <p class="eyebrow">Cadastro de plano</p>
+            <h2 id="planModalTitle">{{ editingPlan() ? 'Editar plano' : 'Novo plano' }}</h2>
+          </div>
+          <button class="close-button" type="button" aria-label="Fechar" (click)="closeModal()">×</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="form-section">
+            <h3>Informações básicas</h3>
+            <div class="form-grid">
+              <label>
+                <span>Nome do plano</span>
+                <input type="text" [ngModel]="form().name" (ngModelChange)="setField('name', $event)" />
+              </label>
+              <label>
+                <span>Slug</span>
+                <input type="text" [ngModel]="form().slug" (ngModelChange)="setField('slug', $event)" placeholder="profissional" />
+              </label>
+              <label class="wide">
+                <span>Descrição curta</span>
+                <textarea rows="3" [ngModel]="form().description" (ngModelChange)="setField('description', $event)"></textarea>
+              </label>
+              <label>
+                <span>Preço mensal</span>
+                <input type="number" min="0" step="0.01" [ngModel]="form().monthlyPrice" (ngModelChange)="setNumberField('monthlyPrice', $event)" />
+              </label>
+              <label>
+                <span>Preço anual</span>
+                <input type="number" min="0" step="0.01" [ngModel]="form().yearlyPrice" (ngModelChange)="setNumberField('yearlyPrice', $event)" />
+              </label>
+              <label>
+                <span>Status</span>
+                <select [ngModel]="form().status" (ngModelChange)="setStatus($event)">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                  <option value="draft">draft</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>Limites</h3>
+            <div class="limits-grid">
+              @for (limit of limitOptions; track limit.key) {
+                <div class="limit-control">
+                  <label>
+                    <span>{{ limit.label }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      [disabled]="form().unlimited[limit.key]"
+                      [ngModel]="form().limits[limit.key]"
+                      (ngModelChange)="setLimit(limit.key, $event)"
+                    />
+                  </label>
+                  <label class="switch-row">
+                    <input type="checkbox" [ngModel]="form().unlimited[limit.key]" (ngModelChange)="setUnlimited(limit.key, $event)" />
+                    <span>Ilimitado</span>
+                  </label>
+                </div>
+              }
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>Recursos habilitados</h3>
+            <div class="feature-grid">
+              @for (feature of featureOptions; track feature.key) {
+                <label class="switch-card">
+                  <input type="checkbox" [ngModel]="form().features[feature.key]" (ngModelChange)="setFeature(feature.key, $event)" />
+                  <span>{{ feature.label }}</span>
+                </label>
+              }
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>Destaque comercial</h3>
+            <div class="feature-grid compact">
+              <label class="switch-card">
+                <input type="checkbox" [ngModel]="form().commercialBadges.recommended" (ngModelChange)="setBadge('recommended', $event)" />
+                <span>Plano recomendado</span>
+              </label>
+              <label class="switch-card">
+                <input type="checkbox" [ngModel]="form().commercialBadges.bestSeller" (ngModelChange)="setBadge('bestSeller', $event)" />
+                <span>Mais vendido</span>
+              </label>
+              <label class="switch-card">
+                <input type="checkbox" [ngModel]="form().commercialBadges.isNew" (ngModelChange)="setBadge('isNew', $event)" />
+                <span>Novo</span>
+              </label>
+              <label class="switch-card">
+                <input type="checkbox" [ngModel]="form().isFeatured" (ngModelChange)="setFeatured($event)" />
+                <span>Destacar no comparativo</span>
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <footer>
+          <button mat-stroked-button type="button" (click)="closeModal()">Cancelar</button>
+          <button mat-flat-button color="primary" type="button" [disabled]="saving() || !canManagePlans()" (click)="savePlan()">
+            @if (saving()) {
+              <mat-spinner diameter="18" />
+              Salvando...
+            } @else {
+              Salvar plano
+            }
+          </button>
+        </footer>
+      </section>
+    </div>
+  }
+</section>

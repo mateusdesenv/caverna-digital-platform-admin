@@ -8,6 +8,7 @@
 nav { display: grid; gap: 6px; }
 nav a { color: #bdb7ae; text-decoration: none; padding: 12px 14px; border-radius: 12px; transition: .2s; }
 nav a:hover, nav a.active { color: #fff; background: rgba(255,255,255,.08); }
+.nav-section { margin: 18px 14px 4px; color: #8d8276; font-size: 11px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
 .sidebar-footer { margin-top: auto; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 16px; display: grid; gap: 8px; }
 .sidebar-footer span { color: #b48958; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
 .workspace { min-width: 0; }

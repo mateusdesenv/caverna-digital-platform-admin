@@ -1,0 +1,38 @@
+<section class="architecture-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Arquitetura</p>
+      <h1>Diagramas de Estrutura</h1>
+      <p>Documentação visual estática da arquitetura atual do SaaS Caverna Digital, seus projetos, serviços e relações principais.</p>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="copyMermaid()">Copiar Mermaid</button>
+      <button mat-flat-button color="primary" type="button" (click)="exportPng()">Exportar PNG</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Diagramas de estrutura">
+    @for (tab of tabs; track tab.id) {
+      <button type="button" [class.active]="activeTab() === tab.id" (click)="setActiveTab(tab.id)">
+        {{ tab.label }}
+      </button>
+    }
+  </nav>
+
+  <section class="legend" aria-label="Legenda">
+    <span class="frontend">Frontend</span>
+    <span class="backend">Backend</span>
+    <span class="database">Banco</span>
+    <span class="firebase">Firebase</span>
+    <span class="infra">Infraestrutura</span>
+    <span class="domain">Domínio</span>
+  </section>
+
+  <app-structure-diagram
+    class="diagram-transition"
+    [title]="activeDiagram().title"
+    [description]="activeDiagram().description"
+    [nodes]="activeDiagram().nodes"
+  />
+</section>

@@ -1,0 +1,37 @@
+<article class="diagram-card">
+  <header>
+    <div>
+      <p class="eyebrow">Diagrama</p>
+      <h2>{{ title() }}</h2>
+      <span>{{ description() }}</span>
+    </div>
+  </header>
+
+  <div class="diagram-canvas">
+    @for (node of nodes(); track node.title) {
+      <section class="node-column">
+        <div class="node-card" [class]="node.kind">
+          <span class="kind-badge">{{ node.kind }}</span>
+          <strong>{{ node.title }}</strong>
+          @if (node.subtitle) {
+            <small>{{ node.subtitle }}</small>
+          }
+        </div>
+
+        @if (node.children?.length) {
+          <div class="branch">
+            @for (child of node.children; track child.title) {
+              <div class="node-card child" [class]="child.kind">
+                <span class="kind-badge">{{ child.kind }}</span>
+                <strong>{{ child.title }}</strong>
+                @if (child.subtitle) {
+                  <small>{{ child.subtitle }}</small>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+</article>

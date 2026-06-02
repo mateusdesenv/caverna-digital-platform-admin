@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { MasterPageComponent } from './master-page.component';
+import { PlansManagementComponent } from './plans-management.component';
 import { MasterShellComponent } from './master-shell.component';
+import { StructureDiagramsPageComponent } from './structure-diagrams-page.component';
 import { authGuard, loginGuard, roleGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -23,11 +25,17 @@ export const routes: Routes = [
       },
       {
         path: 'planos',
-        component: MasterPageComponent,
+        redirectTo: 'plans',
+        pathMatch: 'full',
+      },
+      {
+        path: 'plans',
+        component: PlansManagementComponent,
         canActivate: [roleGuard],
-        data: { page: 'plans', roles: ['super_admin', 'admin', 'finance'] },
+        data: { roles: ['super_admin', 'admin', 'finance'] },
       },
       { path: 'metricas', component: MasterPageComponent, data: { page: 'metrics' } },
+      { path: 'architecture/structure-diagrams', component: StructureDiagramsPageComponent },
       {
         path: 'configuracoes',
         component: MasterPageComponent,

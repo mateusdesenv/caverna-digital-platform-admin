@@ -1,0 +1,27 @@
+.architecture-page { padding: 34px; display: grid; gap: 22px; }
+.page-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+.eyebrow { margin: 0 0 8px; color: #9a7d54; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 900; }
+h1 { margin: 0; font-size: 34px; letter-spacing: 0; }
+.page-header p:not(.eyebrow) { margin: 8px 0 0; max-width: 760px; color: #6f675d; line-height: 1.65; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.tabs { width: fit-content; max-width: 100%; display: flex; gap: 6px; padding: 6px; border: 1px solid #e5ded4; border-radius: 16px; background: #fff; overflow: auto; }
+.tabs button { border: 0; border-radius: 12px; padding: 10px 14px; background: transparent; color: #6f675d; font-weight: 800; cursor: pointer; white-space: nowrap; transition: .2s; }
+.tabs button:hover, .tabs button.active { background: #111; color: #fff; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; }
+.legend span { border-radius: 999px; padding: 7px 11px; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.legend .frontend { background: #e8f3ff; color: #226399; }
+.legend .backend { background: #f8ead8; color: #8a5a1f; }
+.legend .database { background: #e1f7e6; color: #24723b; }
+.legend .firebase { background: #fff0c7; color: #946200; }
+.legend .infra { background: #ede9ff; color: #5b4bb2; }
+.legend .domain { background: #fae8ef; color: #934766; }
+.diagram-transition { animation: fadeIn .24s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 720px) {
+  .architecture-page { padding: 20px; }
+  .page-header { flex-direction: column; }
+  .actions, .actions button { width: 100%; }
+}
