@@ -25,6 +25,7 @@ pnpm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+.env
 
 # Test and coverage output
 coverage/
