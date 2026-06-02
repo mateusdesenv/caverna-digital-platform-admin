@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 export class MasterShellComponent {
   readonly auth = inject(AuthService);
 
-  logout(): void {
-    this.auth.logout();
+  async logout(): Promise<void> {
+    await this.auth.logout();
   }
 }

@@ -12,9 +12,10 @@ mat-card { width: min(100%, 460px); border-radius: 20px; box-shadow: 0 24px 70px
 mat-card-content { padding: 36px; }
 h2 { margin: 0; font-size: 28px; letter-spacing: 0; }
 .muted { margin: 10px 0 28px; color: #6d6d6d; }
-form { display: grid; gap: 14px; }
 button { height: 48px; border-radius: 12px; }
 button mat-spinner { display: inline-block; margin-right: 8px; }
+.google-button { width: 100%; background: #111 !important; color: #fff !important; margin-top: 8px; }
+.google-icon { width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center; background: #fff; color: #111; font-weight: 900; margin-right: 10px; }
 .error-message { border: 1px solid #f0b6b6; background: #fff2f2; color: #9d2525; border-radius: 12px; padding: 12px 14px; font-size: 13px; }
 @media (max-width: 900px) {
   .login-page { grid-template-columns: 1fr; }

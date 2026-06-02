@@ -17,33 +17,22 @@
     <mat-card>
       <mat-card-content>
         <p class="eyebrow">Caverna Digital</p>
-        <h2>Entrar no Admin Master</h2>
-        <p class="muted">Acesso restrito à equipe interna autorizada.</p>
+        <h2>Admin Master</h2>
+        <p class="muted">Acesse o painel interno da plataforma.</p>
 
-        <form (ngSubmit)="submit()">
-          <mat-form-field appearance="outline">
-            <mat-label>E-mail interno</mat-label>
-            <input matInput type="email" name="email" [(ngModel)]="email" autocomplete="email" />
-          </mat-form-field>
+        @if (error()) {
+          <div class="error-message">{{ error() }}</div>
+        }
 
-          <mat-form-field appearance="outline">
-            <mat-label>Senha</mat-label>
-            <input matInput type="password" name="password" [(ngModel)]="password" autocomplete="current-password" />
-          </mat-form-field>
-
-          @if (error()) {
-            <div class="error-message">{{ error() }}</div>
+        <button class="google-button" mat-flat-button type="button" [disabled]="loading()" (click)="loginWithGoogle()">
+          @if (loading()) {
+            <mat-spinner diameter="18" />
+            Autenticando...
+          } @else {
+            <span class="google-icon">G</span>
+            Continuar com Google
           }
-
-          <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
-            @if (loading()) {
-              <mat-spinner diameter="18" />
-              Validando acesso...
-            } @else {
-              Entrar com JWT
-            }
-          </button>
-        </form>
+        </button>
       </mat-card-content>
     </mat-card>
   </section>
